@@ -99,18 +99,33 @@
               },
               "type": "ParseJson"
             },
-            "Filter_array": {
+            "grab-groups-with-destruct": {
               "inputs": {
-                  "from": "@body('parse-groups')?['value']",
-                  "where": "@and(contains(item(), 'tags'), contains(item()?['tags'], 'destructAt'))"
+                "from": "@body('parse-groups')?['value']",
+                "where": "@and(contains(item(), 'tags'), contains(item()?['tags'], 'destructAt'))"
               },
               "runAfter": {
-                  "parse-groups": [
-                      "Succeeded"
-                  ]
+                "parse-groups": [
+                  "Succeeded"
+                ]
               },
               "type": "Query"
-          }
+            },
+            "grab-groups-to-destroy": {
+              "inputs": {
+                "from": "@outputs('grab-groups-with-destruct')",
+                "where": "@equals(item()?['tags']['destructAt'], @outputs('current-hour')))"
+              },
+              "runAfter": {
+                "current-hour": [
+                  "Succeeded"
+                ],
+                "parse-groups": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Query"
+            }
           },
           "contentVersion": "1.0.0.0",
           "outputs": {},
