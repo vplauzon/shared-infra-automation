@@ -113,18 +113,41 @@
             },
             "grab-groups-to-destroy": {
               "inputs": {
-                "from": "@outputs('grab-groups-with-destruct')",
-                "where": "@equals(item()?['tags']['destructAt'], @outputs('current-hour')))"
+                "from": "@body('grab-groups-with-destruct')",
+                "where": "@equals(item()?['tags']['destructAt'], outputs('current-hour'))"
               },
               "runAfter": {
                 "current-hour": [
                   "Succeeded"
                 ],
-                "parse-groups": [
+                "grab-groups-with-destruct": [
                   "Succeeded"
                 ]
               },
               "type": "Query"
+            },
+            "for-each-group": {
+              "actions": {
+                "delete-resource-group": {
+                  "inputs": {
+                    "authentication": {
+                      "type": "ManagedServiceIdentity"
+                    },
+                    "method": "DELETE",
+                    "uri": "https://management.azure.com/subscriptions/@{parameters('subscriptionId')}/resourcegroups/@{item()['name']}?api-version=2018-05-01"
+                  },
+                  "operationOptions": "DisableAsyncPattern",
+                  "runAfter": {},
+                  "type": "Http"
+                }
+              },
+              "foreach": "@body('grab-groups-to-destroy')",
+              "runAfter": {
+                "grab-groups-to-destroy": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Foreach"
             }
           },
           "contentVersion": "1.0.0.0",
