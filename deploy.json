@@ -98,7 +98,19 @@
                 ]
               },
               "type": "ParseJson"
-            }
+            },
+            "Filter_array": {
+              "inputs": {
+                  "from": "@body('parse-groups')?['value']",
+                  "where": "@and(contains(item(), 'tags'), contains(item()?['tags'], 'destructAt'))"
+              },
+              "runAfter": {
+                  "parse-groups": [
+                      "Succeeded"
+                  ]
+              },
+              "type": "Query"
+          }
           },
           "contentVersion": "1.0.0.0",
           "outputs": {},
