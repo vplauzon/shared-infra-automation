@@ -30,7 +30,7 @@
           },
           "actions": {
             "current-hour": {
-              "inputs": "@formatDateTime(utcNow(), 'HH')",
+              "inputs": "@int(formatDateTime(utcNow(), 'HH'))",
               "runAfter": {},
               "type": "Compose"
             },
@@ -114,7 +114,7 @@
             "grab-groups-to-destroy": {
               "inputs": {
                 "from": "@body('grab-groups-with-destruct')",
-                "where": "@equals(item()?['tags']['destructAt'], outputs('current-hour'))"
+                "where": "@equals(int(item()?['tags']['destructAt']), outputs('current-hour'))"
               },
               "runAfter": {
                 "current-hour": [
